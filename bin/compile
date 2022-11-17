@@ -18,5 +18,5 @@ if [[ ! -f "${CLEAN_FILES}" ]]; then
 fi
 
 while read pattern; do
-  find . -wholename "${pattern}" -exec rm -rf {} \;
+  find . -wholename "${pattern}" 2>/dev/null|xargs rm -rf
 done <${CLEAN_FILES}
