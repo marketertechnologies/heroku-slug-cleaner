@@ -21,4 +21,4 @@ while read pattern; do
   find . -wholename "${pattern}" 2>/dev/null|xargs rm -rf
 done <${CLEAN_FILES}
 
-npm install mjml@4.6.0
+npm install mjml@4.9.0
