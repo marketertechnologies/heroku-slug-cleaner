@@ -4,6 +4,7 @@ set -euo pipefail
 
 readonly BUILD_DIR=$1
 readonly CLEAN_FILES=.slug-post-clean
+readonly RUNTIME_PACKAGES=package-runtime
 
 if [[ ! -n "${BUILD_DIR}" ]]; then
   echo "No build directory specified - exiting"
@@ -13,12 +14,24 @@ fi
 cd ${BUILD_DIR}
 
 if [[ ! -f "${CLEAN_FILES}" ]]; then
-  echo "Could not find .slug-post-clean file - exiting"
-  exit 1
+  echo "Could not find .slug-post-clean file - skipping files removal"
+else
+  while read pattern; do
+    find . -wholename "${pattern}" 2>/dev/null|xargs rm -rf
+  done <${CLEAN_FILES}
 fi
 
-while read pattern; do
-  find . -wholename "${pattern}" 2>/dev/null|xargs rm -rf
-done <${CLEAN_FILES}
+if [[ -f "${RUNTIME_PACKAGES}.lock" ]]; then
+  cp "${RUNTIME_PACKAGES}.lock" yarn.lock
+fi
 
-npm install mjml@4.9.0
+if [[ ! -f "${RUNTIME_PACKAGES}.json" ]]; then
+  echo "Could not find ${RUNTIME_PACKAGES}.json file - skipping JS runtime handling"
+else
+  cp "${RUNTIME_PACKAGES}.json" package.json
+  yarn
+
+  rm -f package.json yarn.lock yarn-error.log
+fi
+
+exit 0
