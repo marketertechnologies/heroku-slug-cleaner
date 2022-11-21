@@ -27,6 +27,8 @@ fi
 
 if [[ ! -f "${RUNTIME_PACKAGES}.json" ]]; then
   echo "Could not find ${RUNTIME_PACKAGES}.json file - skipping JS runtime handling"
+# temporary fix for missing mjml
+  yarn add mjml@4.9.0
 else
   cp "${RUNTIME_PACKAGES}.json" package.json
   yarn
